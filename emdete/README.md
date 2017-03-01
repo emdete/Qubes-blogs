@@ -1,6 +1,8 @@
 Qubes
 =====
 
+For now this is my _INTERNAL_, personal list of keywords i want to take care of.
+
 Errors & Bugs
 -------------
 
