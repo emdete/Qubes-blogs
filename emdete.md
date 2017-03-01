@@ -1,8 +1,10 @@
 emdete
 ======
 
-usages
+preferences
 ------
+
+- command line
 
 - i3
 
