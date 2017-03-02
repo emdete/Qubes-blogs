@@ -77,8 +77,8 @@ so my rules with VMs are as such:
   purposes - in case i find a package missing in all templates i install
   it from dom0 via a script.
 
-during minimize i found really weird packages installed in debian (i am
-not a fedora fan so i can't tell about that);
+during minimize i found really weird packages installed in debian
+templates (i did not check fedora):
 
 - all xorg drivers while only 2 are needed
 
@@ -86,16 +86,36 @@ not a fedora fan so i can't tell about that);
 
 - firmware
 
-- big fat network manager, avahi, mdns (i replaced it succesfully by
+- big fat NetworkManager, avahi, mdns (i replaced it succesfully by
   dhcpcd&dnsmasq)
 
 USB
 ---
 
-It seems Qubes supports only USB Storage, i looked into the topic webcam
-and usb-ether which both doesn't seem to be supported. Point is only a
-full bus (pci device) can be exported to a VM, there is no
-per-USB-device propagation into VMs.
+Some chips have a reset-bug. This was my major show stopper in using
+USB. Next it was completly unclear to me what to expect from Qubes about
+it. The sys-usb VM was not installed and when i did so it hang so i left
+all USB in dom0 which is a bad idea.
+
+The reset bug is bad but having USB in dom0 is worse i decided. So i
+enabled to be not so strict in that VM and it works.
+
+After that you can (via command line currently only) ex/import most of the
+USB devices to VMs, device by device, not devices by bus anymore. Just
+issue a
+
+```
+qvm-usb -l
+qvm-usb -a <id> <vm>
+```
+
+to do so.
+
+The mouse is automatically detected and grabbed by dom0 after i agreed
+to it when logging in.
+
+A webcam could be exported to an AppVM, next steps will be android &
+adb.
 
 Wireless
 --------
@@ -128,12 +148,24 @@ generic enough and usabe.
 
 Below this line is my _INTERNAL_, personal list of keywords:
 
+VPNs
+----
+
+Clipboard
+---------
+
+xmodmap
+-------
+
 Outstanding problems
 -------------
 
+- xmodmap
+
 - pavucontrol in dom0 takes 20% cpu
 
-- GUI error with debian-9
+- GUI error with debian-9 (U2MFN_GET_MFN_FOR_PAGE: get_user_pages
+  failed, ret=0xfffffffffffffff2)
 
 - usb problem
 
