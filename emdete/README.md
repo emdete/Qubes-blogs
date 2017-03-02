@@ -6,9 +6,10 @@ Starting
 
 When starting with Qubes as a computer worked with a highly tuned setup for
 personal preferences in usability installing Qubes is like droping anchor. The
-cost of security is you can't do anymore simpliest things. Even if wanted.
+cost of security is you can't do simpliest things anymore. Even if wanted.
 Point is to find out how to tell the system the difference of wanted and not so
-much wanted stuff without loosing the benefits of Qubes.
+much wanted stuff without loosing the benefits of Qubes in a convinient
+way.
 
 On top you loose performance. Qubes generates a stead cpu usage of 20-30% (of
 400%) without anything important running (having a audio control like
@@ -121,7 +122,7 @@ Wireless
 --------
 
 My bluetooth was switched on all the time (led was lit). This wasn't the
-case under Debian. i installed rfkill `Qubes-dom0-update rfkill` in
+case under Debian. i installed rfkill `qubes-dom0-update rfkill` in
 dom0 which allowed to switch wwan & bluetooth off. Even after reboot the
 devices was now switched off by default.
 
@@ -144,6 +145,32 @@ ln -s \
 
 Observation: the volume control pavucontrol in dom0 takes around 20%
 cpu.
+
+Video
+-----
+
+As already mentioned: Qubes eats some CPU. On top it separates the
+processes doing GUI output. So any AppVM has to get the content to dom0
+through some channel. This is (with my HW, a Lenovo T420s) not good
+enough: Movies played with `mpv` stutter, `vlc` seems to be a better. At
+least the audio is not interrupted.
+
+I was not able to play DVDs, error was
+
+
+```
+libdvdread: Attempting to retrieve all CSS keys
+libdvdread: This can take a _long_ time, please be patient
+
+libdvdread: Get key for /VIDEO_TS/VIDEO_TS.VOB at 0x00010f60
+libdvdread: Error cracking CSS key for /VIDEO_TS/VIDEO_TS.VOB (0x00010f60)
+[...]
+[dvdnav] Error getting next block from DVD 1 (Error reading from DVD.)
+[lavf] av_find_stream_info() failed
+Failed to recognize file format.
+```
+
+while `libdvdcss` is installed.
 
 Voidlinux
 ---------
@@ -218,8 +245,6 @@ Outstanding problems
 - Qubes vm manager does not provide scrollbars
 
 - umlaut does not work in VMs (dom0 works) FIXED: run xmodmap
-
-- no dvd video ([lavf] av_find_stream_info() failed, Error cracking CSS key for /VIDEO_TS/VTS_02_0.VOB), libdvdcss installed
 
 - templates do not shut down
 

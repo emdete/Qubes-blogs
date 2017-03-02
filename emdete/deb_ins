@@ -1,0 +1,18 @@
+#!/bin/sh -e
+for n in debian-full-dev debian-minimal; do
+	qvm-start --skip-if-running --no-guid $n
+	sleep 3
+	if [ `qvm-run --pass-io --auto --user root $n 'test -f /etc/debian_version; echo $?'` = 0 ]; then
+		qvm-run --pass-io --auto --user root $n "apt-get update"
+		if [ -z "$1" ]; then
+			qvm-run --pass-io --auto --user root $n "apt-get dist-upgrade"
+		else
+			qvm-run --pass-io --auto --user root $n "apt-get install $*"
+		fi
+		qvm-run --pass-io --auto --user root $n "apt-get clean"
+	else
+		echo "Unknown distribution in $n"
+	fi
+	qvm-shutdown --wait $n
+	qvm-trim-template $n
+done
