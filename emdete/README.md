@@ -4,7 +4,7 @@ Qubes
 Starting
 --------
 
-When starting with qubes as a computer worked with a highly tuned setup for
+When starting with Qubes as a computer worked with a highly tuned setup for
 personal preferences in usability installing Qubes is like droping anchor. The
 cost of security is you can't do anymore simpliest things. Even if wanted.
 Point is to find out how to tell the system the difference of wanted and not so
@@ -43,11 +43,11 @@ this entry in `/etc/fstab`:
 ```
 
 The Qubes Manage nicely shows where
-the disk images for the VMs ended up so i created a debian AppVM, removed the
+the disk images for the VMs ended up so i created a Debian AppVM, removed the
 private raw image of it and symlinked the partition.
 
 I added the part to boot Qubes from the original Qubes installtion into
-the grub config of my bare metal installation to have a double boot.
+the grub config of my pure Debian installation to have a double boot.
 
 Template usage
 --------------
@@ -77,7 +77,7 @@ so my rules with VMs are as such:
   purposes - in case i find a package missing in all templates i install
   it from dom0 via a script.
 
-during minimize i found really weird packages installed in debian
+during minimize i found really weird packages installed in Debian
 templates (i did not check fedora):
 
 - all xorg drivers while only 2 are needed
@@ -86,8 +86,8 @@ templates (i did not check fedora):
 
 - firmware
 
-- big fat NetworkManager, avahi, mdns (i replaced it succesfully by
-  dhcpcd&dnsmasq)
+- big fat NetworkManager, isc-dhcp, avahi, mdns (i replaced it
+  succesfully by dhcpcd&dnsmasq)
 
 USB
 ---
@@ -121,8 +121,9 @@ Wireless
 --------
 
 My bluetooth was switched on all the time (led was lit). This wasn't the
-case under Debian. i installed rfkill `qubes-dom0-update rfkill` in
-dom0 which allowed to switch wwan & bluetooth off.
+case under Debian. i installed rfkill `Qubes-dom0-update rfkill` in
+dom0 which allowed to switch wwan & bluetooth off. Even after reboot the
+devices was now switched off by default.
 
 Sound
 -----
@@ -131,7 +132,7 @@ Sound is done via pulseaudio. Each VM gets an artificial sink
 (pulseaudio speach) which is sending all sound to dom0. In dom0 a
 pulseaudio mixes everything together et voila.
 
-Newer debian (and fedora) switched to pulseaudio 10 while the packages
+Newer Debian (and fedora) switched to pulseaudio 10 while the packages
 are packaged for 9. The .so works but is in the wrong place. Just
 symlink it to activate and restart the daemon or reboot the VM.
 
@@ -141,11 +142,14 @@ ln -s \
 	/usr/lib/pulse-10.0/modules/module-vchan-sink.so
 ```
 
+Observation: the volume control pavucontrol in dom0 takes around 20%
+cpu.
+
 Voidlinux
 ---------
 
 I recently discovered Voidlinux, a new distribution from scratch without
-legacy issues. So i decided to try to build a Voidlinux based appvm.
+legacy issues. So i decided to try to build a Voidlinux based AppVM.
 
 A setup of an HVM was braindead simple. An AppVM (or PVM) would be
 harder. All the Qubes programs have to be build. This is alot of trouble
@@ -155,7 +159,7 @@ source tree to build with `make` and to install with `make install` -
 plus maybe a configure step in the beginning. These repos don't behave
 like that. Some just give a help when issueing a `make`, some have even
 bugs in that help, some don't even have a generic Makefile and rely on
-distro specific stuff.
+distro specific stuff, some install plain files with executable bit.
 
 On top the packages depend on systemd (which is not used by Voidlinux).
 I doubt that systemd is a good choice for a system like Qubes but that's
@@ -206,14 +210,12 @@ Outstanding problems
 
 - xmodmap
 
-- pavucontrol in dom0 takes 20% cpu
-
 - GUI error with debian-9 (U2MFN_GET_MFN_FOR_PAGE: get_user_pages
   failed, ret=0xfffffffffffffff2)
 
 - acpi (?) problem (battery control, XF86Launch1, brightness sometimes stop working after suspend/resume)
 
-- qubes vm manager does not provide scrollbars
+- Qubes vm manager does not provide scrollbars
 
 - umlaut does not work in VMs (dom0 works) FIXED: run xmodmap
 
@@ -229,13 +231,11 @@ Outstanding problems
 
 - separate packing for distributions from code
 
-- reconsider systemd use (runit)
+- reconsider systemd (use runit)
 
-- debian should switch off apt install-recommends, install-suggests
+- Debian should switch off apt install-recommends, install-suggests
 
 - are the dependencies correct?
-
-- isc-dhcp is a nightmare
 
 - switch from exim to opensmtp
 
