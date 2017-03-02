@@ -124,6 +124,23 @@ My bluetooth was switched on all the time (led was lit). This wasn't the
 case under Debian. i installed rfkill `qubes-dom0-update rfkill` in
 dom0 which allowed to switch wwan & bluetooth off.
 
+Sound
+-----
+
+Sound is done via pulseaudio. Each VM gets an artificial sink
+(pulseaudio speach) which is sending all sound to dom0. In dom0 a
+pulseaudio mixes everything together et voila.
+
+Newer debian (and fedora) switched to pulseaudio 10 while the packages
+are packaged for 9. The .so works but is in the wrong place. Just
+symlink it to activate and restart the daemon or reboot the VM.
+
+```
+ln -s \
+	../../pulse-9.0/modules/module-vchan-sink.so \
+	/usr/lib/pulse-10.0/modules/module-vchan-sink.so
+```
+
 Voidlinux
 ---------
 
@@ -151,11 +168,38 @@ Below this line is my _INTERNAL_, personal list of keywords:
 VPNs
 ----
 
+This is pure Qubes marketing: VPNs are incredible and a major argument
+to use Qubes. I now can have several VPNs up, one in each VM and work in
+completly different environments. I can switch only by focussing the
+window. Each has it's own network setup. No more to say - it (as
+expected) just works! Neat!
+
+X11 startup phase in VMs
+------------------------
+
 Clipboard
 ---------
 
+The clipboard drives me crazy, all VMs are separated and the content is
+not propagated by design. This is an incredible feature which hit me
+hard. I never type out, i always copy & paste. always. Now i have to
+learn to press additional Ctrl-Shift-C & V. But sometimes even that does
+not work as X has several clipboards.
+
+There is a nice program called `autocutsel` which solved most of my
+problems. Point is: It has to be run in each VM at startup (see above).
+I use two of these:
+
+```
+autocutsel -f
+autocutsel -f -s PRIMARY
+```
+
 xmodmap
 -------
+
+If you happen to use a modified xmodmap (as i do) you have to apply
+these in each VM. It must be run at startup (see above).
 
 Outstanding problems
 -------------
@@ -167,13 +211,9 @@ Outstanding problems
 - GUI error with debian-9 (U2MFN_GET_MFN_FOR_PAGE: get_user_pages
   failed, ret=0xfffffffffffffff2)
 
-- usb problem
-
 - acpi (?) problem (battery control, XF86Launch1, brightness sometimes stop working after suspend/resume)
 
 - qubes vm manager does not provide scrollbars
-
-- sound / pulse audio for 9, actual version is 10 FIXED: move the .so to the proper places fixes this
 
 - umlaut does not work in VMs (dom0 works) FIXED: run xmodmap
 
