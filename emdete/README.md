@@ -134,7 +134,7 @@ qvm-usb -a <id> <vm>
 
 to do so.
 
-The mouse is automatically detected and grabbed by dom0 after i agreed
+The mouse was automatically detected and grabbed by dom0 after i agreed
 to it when logging in.
 
 A webcam could be exported to an AppVM, next steps will be android &
@@ -230,6 +230,24 @@ expected) just works! Neat!
 X11 startup phase in VMs
 ------------------------
 
+### i3
+
+I switched to i3 recently and was happy that it's support in Qubes. It
+is a bit tuned to allow colored titlebars but the config is mainly
+standard. I mainly followed the instructions in
+[https://www.qubes-os.org/doc/i3/] and after logout you could choose the
+different windowmanager in the dm.
+
+Qubes brings an home grown i3status which i did not like so i
+implemented one myself (see [qubes-i3status] and [qubes-i3status.py], i
+use two scripts mainly for debugging so it's easier to implement new
+formats and features). I put the files into `/usr/local/bin/` and
+adapted the i3 config accordingly.
+
+While `dmenu_run` would run fine it only runs programs from dom0. Qubes
+preinstalls `i3-dmenu-desktop` which gives access to the desktop
+startfles and thus access to start programms in AppVMs.
+
 ### xresources
 
 in case you set xresources these must be set per VM as each VM has an
@@ -256,6 +274,41 @@ I use two of these:
 autocutsel -f
 autocutsel -f -s PRIMARY
 ```
+
+Unnecessary complexity
+----------------------
+
+I can not follow some decisions for pre-installed or dependend software.
+Qubes seems to have the attitude of "Qubes is secure so we do not care
+too much what's going on in VMs". So the VMs itself are not much
+hardened or even cleaned up. Many packages are installed that are
+unnessesary or even dangerous. But some major decisions attracted my
+attention. This is a list.
+
+### systemd
+
+systemd is a huge moloch merging many functionality into one single
+something. I consider this a non-unix aproach. Out of security
+perspective i would argue that so much code contains more attach
+surface. Why not using a small simple startup system like runit?
+
+### exim
+
+exim is not as complex as system but bears features that you seldomly
+really need. The project opensmtp concentrates on the important parts.
+
+### qt
+
+qt is a monster. Full of minor bugs and features. I would not use it
+in the most critical VM dom0. gtk isn't much better. I agree, this is
+all about gui, eye candy attaches attention but i would not install qt
+in dom0.
+
+### NetworkManage
+
+The network in AppVMs rely on NetworkManage! Even avahi and mdns is
+preinstalled. This ist completly useless, a simple dhcp-client would do
+(dhcpcd was my decision which works fine in debian-9).
 
 File exchange
 -------------
@@ -284,21 +337,14 @@ Outstanding problems
 
 - use nodm
 
-- use tk instead of qt
-
 - separate packing for distributions from code
-
-- reconsider systemd (use runit)
 
 - Debian should switch off apt install-recommends, install-suggests
 
 - are the dependencies correct?
 
-- switch from exim to opensmtp
-
 - traces left from dispvm
 
 - sudo-install into /usr/local/bin could overwrite programs permanently
   if that's first in $PATH
-
 
