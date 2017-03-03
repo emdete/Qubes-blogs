@@ -50,6 +50,28 @@ private raw image of it and symlinked the partition.
 I added the part to boot Qubes from the original Qubes installtion into
 the grub config of my pure Debian installation to have a double boot.
 
+Backup
+------
+
+There is no usable backup concept. Raw blobs take too long to be
+regulary made (once a day?). Due to the separation the fine tuning of
+the system is scattered into to many places. A restauration of the same
+system after a crash or lost will takes more or less the same time as
+the initial setup. Backup of changes of a huge bunch of files will be a
+nightmare (my valuable /rw data is currently around 300GB). A
+incremental backup including a backup of all individual configuration is
+urgently needed.
+
+In a typical unix setup you tend to do all individual setup changes in
+$HOME and keep a backup of that. A restauration of it is easy, you
+install a system around and restore the $HOME into it and are done.
+
+In Qubes you start putting individual setup into the system because you
+tune your templates. Any AppVM using that template benefits from your
+personal settings. This complicates things because beside having several
+$HOMEs you have different place for you individual tunings mixed into
+the system as well.
+
 Template usage
 --------------
 
@@ -152,8 +174,8 @@ Video
 As already mentioned: Qubes eats some CPU. On top it separates the
 processes doing GUI output. So any AppVM has to get the content to dom0
 through some channel. This is (with my HW, a Lenovo T420s) not good
-enough: Movies played with `mpv` stutter, `vlc` seems to be a better. At
-least the audio is not interrupted.
+enough: Movies played with `mpv` stutter, `vlc` seems to do a better
+job. At least the audio is not interrupted.
 
 I was not able to play DVDs, error was
 
@@ -208,8 +230,17 @@ expected) just works! Neat!
 X11 startup phase in VMs
 ------------------------
 
-Clipboard
----------
+### xresources
+
+in case you set xresources these must be set per VM as each VM has an
+own X11 server running.
+
+### xmodmap
+
+If you happen to use a modified xmodmap (as i do) you have to apply
+these in each VM. It must be run at startup (see above).
+
+### Clipboard
 
 The clipboard drives me crazy, all VMs are separated and the content is
 not propagated by design. This is an incredible feature which hit me
@@ -226,25 +257,26 @@ autocutsel -f
 autocutsel -f -s PRIMARY
 ```
 
-xmodmap
--------
+File exchange
+-------------
 
-If you happen to use a modified xmodmap (as i do) you have to apply
-these in each VM. It must be run at startup (see above).
+I was missing a method to make files and directory trees from on VM
+visible in another VM. So i developed
+(Qubes-InterVMFS)[https://github.com/emdete/Qubes-InterVMFS] which makes
+exactly that possible.
 
 Outstanding problems
 -------------
 
-- xmodmap
-
 - GUI error with debian-9 (U2MFN_GET_MFN_FOR_PAGE: get_user_pages
   failed, ret=0xfffffffffffffff2)
 
-- acpi (?) problem (battery control, XF86Launch1, brightness sometimes stop working after suspend/resume)
+- acpi (?) problem (battery control, XF86Launch1, brightness sometimes
+  stop working after suspend/resume)
 
-- Qubes vm manager does not provide scrollbars
-
-- umlaut does not work in VMs (dom0 works) FIXED: run xmodmap
+- Qubes vm manager does not provide scrollbars and the windowsize is
+  fixed. in case there are more VMs than screenheight you can't access
+  those.
 
 - templates do not shut down
 
@@ -266,7 +298,7 @@ Outstanding problems
 
 - traces left from dispvm
 
-- sudo-install into /usr/local/bin could overwrite programs permanently if that's first in $PATH
+- sudo-install into /usr/local/bin could overwrite programs permanently
+  if that's first in $PATH
 
-- no proper backup concept (raw blobs just take too long to be regulary made (once a day?))
 
