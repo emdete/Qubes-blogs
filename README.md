@@ -4,7 +4,7 @@ Adventures on Qubes
 Idea
 ----
 
-I wrote together some perceptions during my first steps on Qubes. Every single
+I collected some perceptions during my first steps on Qubes. Every single
 topic i found out took time and this could be speeded up if others that did the
 same just wrote down what they found out.
 
