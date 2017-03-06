@@ -23,8 +23,8 @@ directory and every user can provide whatever he thinks is useful.
 Invite
 ------
 
-So everone undertaking his first steps with Qubes is invited to participate in
-this collection of structured and well groomed information. 
+So everone undertaking her first steps with Qubes is invited to participate in
+this collection of structured and well groomed information.
 
 Rules
 -----

@@ -134,11 +134,18 @@ qvm-usb -a <id> <vm>
 
 to do so.
 
-The mouse was automatically detected and grabbed by dom0 after i agreed
+### Mouse
+
+A mouse was automatically detected and grabbed by dom0 after i agreed
 to it when logging in.
 
-A webcam could be exported to an AppVM, next steps will be android &
-adb.
+### Webcam
+
+A webcam could be exported to an AppVM and use in there with not problems.
+
+### Android debug bridge
+
+I did not get ADB to work.
 
 Wireless
 --------
@@ -216,8 +223,6 @@ another matter. Anyway the packages need some cleanup before being
 generic enough and usabe.
 
 
-Below this line is my _INTERNAL_, personal list of keywords:
-
 VPNs
 ----
 
@@ -275,6 +280,18 @@ autocutsel -f
 autocutsel -f -s PRIMARY
 ```
 
+### Mouse hide
+
+Some programs switch off the mouse cursor while not in use which is usefull for
+slideshows, videowatching or even the terminal. This doesn't seem to be
+supported by Qubes and the cursor is just hang about everywhere.
+
+### Urgency flag
+
+Programs can set the urgency flag to drag the users attantion. This is not
+support by Qubes and messenger programs or emailer can't inform the user of new
+events.
+
 Unnecessary complexity
 ----------------------
 
@@ -318,8 +335,8 @@ visible in another VM. So i developed
 (Qubes-InterVMFS)[https://github.com/emdete/Qubes-InterVMFS] which makes
 exactly that possible.
 
-Outstanding problems
--------------
+Outstanding issues
+------------------
 
 - GUI error with debian-9 (U2MFN_GET_MFN_FOR_PAGE: get_user_pages
   failed, ret=0xfffffffffffffff2)
@@ -334,8 +351,6 @@ Outstanding problems
 - templates do not shut down
 
 - how to change pwd (account, crypt fs)
-
-- use nodm
 
 - separate packing for distributions from code
 
