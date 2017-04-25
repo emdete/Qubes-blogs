@@ -3,21 +3,27 @@ from datetime import datetime
 from subprocess import Popen, PIPE
 from json import dumps
 
-def status_qubes(color='#00ff00'):
+C_NORMAL = '#00dd00'
+C_FATAL = '#ff0000'
+C_WARN = '#ffff00'
+
+def status_qubes(name='qubes', color=C_NORMAL):
+	full_text = name
 	try:
 		with Popen(['qvm-ls', '--raw-data', 'name', 'on', ], stdout=PIPE, env=dict(LANG='C', )) as f:
 			count = len([l for l in f.stdout.readlines() if l.strip()[-1] == 42])
-		return '"name":"qubes","full_text":"{} Qubes","color":"{}"'.format(count, color)
+		full_text = '{} Qubes'.format(count)
 	except:
-		return '"name":"qubes","full_text":"qubes","color":"#ff0000"'
+		color = C_FATAL
+	return dict(name=name, full_text=full_text, color=color, )
 
-def status_qubes_net(netvm='sys-net', color='#00ff00'):
+def status_qubes_net(name='qubes-net', netvm='sys-net', color=C_NORMAL):
+	full_text = name
 	try:
 		with Popen(['qvm-run', '--passeio', netvm, 'ip route', ], stdout=PIPE, env=dict(LANG='C', )) as f:
 			dev = [l.split()[4] for l in f.stdout.readlines() if l.split()[0]==b'default']
 		if not dev:
-			color = '#ff0000'
-			dev = 'None'
+			color = C_WARN
 			ip = '-'
 			ssid = '-'
 		else:
@@ -31,11 +37,13 @@ def status_qubes_net(netvm='sys-net', color='#00ff00'):
 					ssid = str([l.split() for l in f.stdout.readlines()][0][3], 'ascii').split(':')[1][1:-1]
 			else:
 				ssid = '-'
-		return '"name":"net","full_text":"{}: {} ({})","color":"{}"'.format(dev, ip, ssid, color)
+		full_text = '{}: {} ({})'.format(dev, ip, ssid)
 	except:
-		return '"name":"net","full_text":"net","color":"#ff0000"'
+		color = C_FATAL
+	return dict(name=name, full_text=full_text, color=color, )
 
-def status_net(color='#00ff00'):
+def status_net(name='net', color=C_NORMAL):
+	full_text = name
 	try:
 		dev = None
 		with Popen(['ip', 'route', ], stdout=PIPE, env=dict(LANG='C', )) as f:
@@ -45,8 +53,7 @@ def status_net(color='#00ff00'):
 					p = l.index(b'dev')
 					dev = l[p+1]
 		if not dev:
-			color = '#ff0000'
-			dev = 'lo'
+			color = C_WARN
 			ip = '-'
 			ssid = '-'
 		else:
@@ -58,21 +65,25 @@ def status_net(color='#00ff00'):
 					ssid = str([l.strip().split(b'=')[1] for l in f.stdout.readlines() if l.startswith(b'ssid=')][0], 'ascii')
 			else:
 				ssid = '-'
-		return '"name":"net","full_text":"{}: {} ({})","color":"{}"'.format(dev, ip, ssid, color)
+		full_text = '{}: {} ({})'.format(dev, ip, ssid)
 	except:
-		return '"name":"net","full_text":"net","color":"#ff0000"'
+		color = C_FATAL
+	return dict(name=name, full_text=full_text, color=color, )
 
-def status_disk(color='#00ff00'):
+def status_disk(name='ssd', color=C_NORMAL):
+	full_text = name
 	try:
 		with Popen(['df', '--output=pcent', '/rw', ], stdout=PIPE, env=dict(LANG='C', )) as f:
 			pcent = int(f.stdout.read().strip().split()[1][:-1])
-		if pcent > 85:
-			color = '#ff0000'
-		return '"name":"sdd","full_text":"sdd: {}%","color":"{}"'.format(pcent, color, )
+		if pcent > 90:
+			color = C_WARN
+		full_text = 'ssd: {}%'.format(pcent)
 	except:
-		return '"name":"sdd","full_text":"sdd","color":"#ff0000"'
+		color = C_FATAL
+	return dict(name=name, full_text=full_text, color=color, )
 
-def status_bat(color='#00ff00'):
+def status_bat(name='bat', color=C_NORMAL):
+	full_text = name
 	try:
 		if True: # relative to capacity
 			with open('/sys/class/power_supply/BAT0/capacity') as f:
@@ -95,22 +106,26 @@ def status_bat(color='#00ff00'):
 		else:
 			status_chr = chr(9660)
 		if capacity <= 30:
-			color = '#ff0000'
-		return '"name":"bat","full_text":"bat: {}{}%","color":"{}"'.format(status_chr, capacity, color, )
+			color = C_WARN
+		full_text = 'bat: {}{}%'.format(status_chr, capacity)
 	except:
-		return '"name":"bat","full_text":"bat","color":"#ff0000"'
+		color = C_FATAL
+	return dict(name=name, full_text=full_text, color=color, )
 
-def status_load(color='#00ff00'):
+def status_load(name='load', color=C_NORMAL):
+	full_text = name
 	try:
 		with Popen(['uptime', ], stdout=PIPE, env=dict(LANG='C', )) as f:
 			load = float(f.stdout.read().strip().split()[-3][:4])
 		if load > 3.0:
-			color = '#ff0000'
-		return '"name":"load","full_text":"load: {}","color":"{}"'.format(load, color)
+			color = C_WARN
+		full_text = 'load: {}'.format(load)
 	except:
-		return '"name":"load","full_text":"load","color":"#ff0000"'
+		color = C_FATAL
+	return dict(name=name, full_text=full_text, color=color, )
 
-def status_xen_cpu(color='#00ff00'):
+def status_xen_cpu(name='cpu', color=C_NORMAL):
+	full_text = name
 	try:
 		cpu = 0.0
 		with Popen(['xentop', '-i', '2', '-b', ], stdout=PIPE, env=dict(LANG='C', )) as f:
@@ -121,49 +136,62 @@ def status_xen_cpu(color='#00ff00'):
 				except:
 					pass
 		if cpu > 60.0:
-			color = '#ff0000'
-		return '"name":"cpu","full_text":"cpu: {:.1f}%","color":"{}"'.format(cpu, color)
+			color = C_FATAL
+		full_text = 'cpu: {:.1f}%'.format(cpu)
 	except:
-		return '"name":"cpu","full_text":"cpu","color":"#ff0000"'
+		color = C_FATAL
+	return dict(name=name, full_text=full_text, color=color, )
 
-def status_temp(color='#00ff00'):
+def status_temp(name='temp', color=C_NORMAL):
+	full_text = name
 	try:
 		with open('/sys/devices/platform/coretemp.0/hwmon/hwmon1/temp1_input') as f:
 			temp = int(f.readline().strip()) // 1000
-		return '"name":"temp","full_text":"temp: {}°","color":"{}"'.format(temp, color, )
+		if temp > 80:
+			color = C_WARN
+		full_text = 'temp: {}°'.format(temp)
 	except:
-		return '"name":"temp","full_text":"temp","color":"#ff0000"'
+		color = C_FATAL
+	return dict(name=name, full_text=full_text, color=color, )
 
-def status_brightness(color='#00ff00'):
+def status_brightness(name='brightness', color=C_NORMAL):
+	full_text = name
 	try:
 		with open('/sys/devices/pci0000:00/0000:00:02.0/backlight/acpi_video0/max_brightness') as f:
 			max_brightness = int(f.readline().strip())
 		with open('/sys/devices/pci0000:00/0000:00:02.0/backlight/acpi_video0/actual_brightness') as f:
 			actual_brightness = int(f.readline().strip())
 		brightness = int((actual_brightness / (max_brightness+1)) * 10)
-		return '"name":"brightness","full_text":"brightness: {}☼","color":"{}"'.format(brightness, color, )
+		if brightness < 2:
+			color = C_WARN
+		full_text = 'brightness: {}☼'.format(brightness, color, )
 	except:
-		return '"name":"brightness","full_text":"brightness","color":"#ff0000"'
+		color = C_FATAL
+	return dict(name=name, full_text=full_text, color=color, )
 
-def status_volume(color='#00ff00'):
+def status_volume(name='volume', color=C_NORMAL):
+	full_text = name
 	try:
 		volume = '?'
 		if False:
 			with Popen(['pactl', 'list', 'sinks', ], stdout=PIPE, env=dict(LANG='C', )) as f:
 				for l in f.readlines():
 					'Description', 'Volume', 'Mute'
-		return '"name":"volume","full_text":"volume: {}♬","color":"{}"'.format(volume, color, )
+		full_text = 'volume: {}♬'.format(volume)
 	except:
-		return '"name":"volume","full_text":"volume","color":"#ff0000"'
+		color = C_FATAL
+	return dict(name=name, full_text=full_text, color=color, )
 
-def status_time(color='#bbbbbb'):
+def status_time(name='time', color='#dddddd'):
+	full_text = name
 	try:
-		return '"name":"time","full_text":"{}","color":"{}"'.format(datetime.now().strftime("%Y-%m-%d %H:%M, %a [%V]"), color, )
+		full_text = datetime.now().strftime("%Y-%m-%d %H:%M, %a [%V]")
 	except:
-		return '"name":"time","full_text":"time","color":"#ff0000"'
+		color = C_FATAL
+	return dict(name=name, full_text=full_text, color=color, )
 
 if __name__ == '__main__':
-	print(',[{{{}}}]'.format('},{'.join([s for s in (
+	print(dumps((
 		status_net(),
 		status_disk(),
 		status_load(),
@@ -172,4 +200,4 @@ if __name__ == '__main__':
 		status_brightness(),
 		status_volume(),
 		status_time(),
-		) if s])))
+		)))
