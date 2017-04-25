@@ -147,6 +147,12 @@ A webcam could be exported to an AppVM and use in there with not problems.
 
 I did not get ADB to work.
 
+### USB Ether
+
+I love USB Ether as my android does that for tethering. Using it i'm not forced
+to open a maybe vulnerable WLAN. The sys-usb recognizes the device but i found
+no way to export it to the sys-net where it could be used.
+
 Wireless
 --------
 
@@ -363,3 +369,4 @@ Outstanding issues
 - sudo-install into /usr/local/bin could overwrite programs permanently
   if that's first in $PATH
 
+- shutdown takes ages
